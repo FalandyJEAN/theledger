@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.white,
         title: Text(widget.title),
       ),
       bottomNavigationBar: NavigationBar(
@@ -71,58 +71,89 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text('You have pushed the button this many times:'),
-          Text(
-            '$_counter',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          ListTile(
-            leading: Image.network(
-              'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
-            ),
-            title: const Text('Donald Trump a la conquete de la Maison Blanche'),
-            subtitle: const Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vehicula, nunc at sollicitudin ...',
-            ),
-            isThreeLine: true,
-            dense: true,
-            trailing: const Icon(Icons.arrow_circle_right_outlined),
-          ),
-          ListTile(
-            leading: Image.network(
-              'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
-            ),
-            title: const Text('Donald Trump a la conquete de la Maison Blanche'),
-            subtitle: const Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vehicula, nunc at sollicitudin ...',
-            ),
-            isThreeLine: true,
-            dense: true,
-            trailing: const Icon(Icons.arrow_circle_right_outlined),
-          ),
-          ListTile(
-            leading: Image.network(
-              'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
-            ),
-            title: const Text('Donald Trump a la conquete de la Maison Blanche'),
-            subtitle: const Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vehicula, nunc at sollicitudin ...',
-            ),
-            isThreeLine: true,
-            dense: true,
-            trailing: const Icon(Icons.arrow_circle_right_outlined),
-          ),
-        ],
+    body: ListView(
+  padding: const EdgeInsets.all(16),
+  children: [
+   
+    const Text(
+      'À la une',
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
       ),
+    ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    const SizedBox(height: 20), 
+
+    
+    ClipRect(
+      child: Banner(
+        message: "À la une",
+        location: BannerLocation.topEnd,
+        color: Colors.redAccent,
+        child: Container(
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Image.network(
+                  'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: const [
+                    Expanded(
+                      child: Text(
+                        'Donald Trump a la conquete de la Maison Blanche',
+                        softWrap: true,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
+    ),
+
+    const SizedBox(height: 20), 
+
+    // Articles en liste
+    ListTile(
+      leading: Image.network(
+        'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
+      ),
+      title: const Text('Donald Trump a la conquete de la Maison Blanche'),
+      subtitle: const Text(
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vehicula, nunc at sollicitudin ...',
+      ),
+      isThreeLine: true,
+      dense: true,
+      trailing: const Icon(Icons.arrow_circle_right_outlined),
+    ),
+
+    ListTile(
+      leading: Image.network(
+        'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
+      ),
+      title: const Text('Donald Trump a la conquete de la Maison Blanche'),
+      subtitle: const Text(
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vehicula, nunc at sollicitudin ...',
+      ),
+      isThreeLine: true,
+      dense: true,
+      trailing: const Icon(Icons.arrow_circle_right_outlined),
+    ),
+  ],
+),
+
     );
   }
 }
