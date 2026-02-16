@@ -11,7 +11,7 @@ class ArticleService {
 
   ArticleService._internal();
 
-  String baseUrl = "https://api.spaceflightnewsapi.net/v4/articles";
+  String baseUrl = "https://api.spaceflightnewsapi.net/v4/articles?page_size=100";
 
   final List<Article> _favorites = [];
 
