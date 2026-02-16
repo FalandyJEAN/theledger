@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:the/details_page.dart'; 
+import 'package:the/category.dart';
+import 'package:the/main.dart';
 
 void main() {
   runApp(const TestApp());
@@ -11,6 +14,10 @@ class TestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.pink,
+      ),
       home: const FavoritesPage(),
     );
   }
@@ -24,12 +31,15 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
+  // Varyab pou kontwole onglet ki seleksyone a
+  int currentPageIndex = 1;
+
   List<Map<String, dynamic>> favoriteArticles = [
     {
       'id': '1',
       'title': 'Donald Trump à la conquête de la Maison Blanche',
       'category': 'Politique',
-      'imageUrl': 'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
+      'imageUrl': 'https://picsum.photos/200/300',
       'date': '15 Fév 2025',
       'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
     },
@@ -37,7 +47,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       'id': '2',
       'title': 'Les mystères de l\'univers dévoilés',
       'category': 'Science',
-      'imageUrl': 'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
+      'imageUrl': 'https://picsum.photos/201/301',
       'date': '14 Fév 2025',
       'description': 'Sed do eiusmod tempor incididunt ut labore et dolore...',
     },
@@ -45,7 +55,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       'id': '3',
       'title': 'Recette du jour : pasta carbonara',
       'category': 'Cuisine',
-      'imageUrl': 'https://th.bing.com/th/id/OIF.WSXDhD5jCwPnvthV79KV4w?w=248&h=180&c=7&r=0&o=7&cb=defcache2&pid=1.7&rm=3&defcache=1',
+      'imageUrl': 'https://picsum.photos/202/302',
       'date': '13 Fév 2025',
       'description': 'Ut enim ad minim veniam, quis nostrud exercitation...',
     },
@@ -56,6 +66,41 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return Scaffold(
       appBar: _buildAppBar(),
       body: _buildBody(),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: currentPageIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+
+          if (index == 0) {
+            Navigator.push(
+              context, MaterialPageRoute(
+                builder: (context) => const MyHomePage(title: 'The Ledger')));
+          } else if (index == 2) {
+            Navigator.push(
+              context, MaterialPageRoute(
+                builder: (context) => const CategoriesPage()));
+          }
+        },
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined), 
+            selectedIcon: Icon(Icons.home),
+            label: 'Home'
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.favorite_border), 
+            selectedIcon: Icon(Icons.favorite),
+            label: 'Favorites'
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu), 
+            label: 'Categories'
+          ),
+        ],
+      ),
     );
   }
 
@@ -170,7 +215,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ),
         child: InkWell(
           onTap: () {
-            print('Article sélectionné: ${article['title']}');
+            // Navigation vers DetailsPage avec les données de l'article
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailsPage(
+                  title: article['title'],
+                  imageUrl: article['imageUrl'],
+                  content: "Contenu complet de l'article : ${article['description']}",
+                ),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
@@ -185,6 +240,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.broken_image),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -218,7 +279,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                               style: const TextStyle(
                                 fontSize: 11,
                                 color: Colors.blue,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -262,6 +323,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return Container(
       alignment: Alignment.centerRight,
       padding: const EdgeInsets.only(right: 20),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.red,
         borderRadius: BorderRadius.circular(12),
@@ -287,17 +349,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
     setState(() {
       favoriteArticles.removeAt(index);
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$title retiré des favoris'),
         duration: const Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'Annuler',
-          onPressed: () {
-            print('Annuler la suppression');
-          },
-        ),
       ),
     );
   }
@@ -308,9 +364,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
       builder: (context) => AlertDialog(
         title: const Text('Retirer des favoris ?'),
         content: Text('Voulez-vous retirer "$title" de vos favoris ?'),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -318,9 +371,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Retirer'),
           ),
         ],
@@ -336,9 +387,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
         content: Text(
           'Cette action supprimera tous vos articles favoris (${favoriteArticles.length} articles).',
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -350,15 +398,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 favoriteArticles.clear();
               });
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Tous les favoris ont été supprimés'),
-                ),
-              );
             },
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Tout supprimer'),
           ),
         ],
