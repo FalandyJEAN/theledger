@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:the/details_page.dart'; 
-import 'package:the/main.dart';      
-import 'package:the/favorites.dart'; 
+import 'package:the/details_page.dart';
+import 'package:the/main.dart';
+import 'package:the/favorites.dart';
+import 'package:the/service.dart';
 
 class MonApp extends StatelessWidget {
   const MonApp({super.key});
@@ -12,79 +13,81 @@ class MonApp extends StatelessWidget {
       title: 'Lecteur Actu',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: const NewsPage(), 
+      home: const CategoriesPage(),
     );
   }
 }
 
-class NewsPage extends StatefulWidget {
-  const NewsPage({super.key});
+class CategoriesPage extends StatefulWidget {
+  const CategoriesPage({super.key});
 
   @override
-  State<NewsPage> createState() => _NewsPageState();
+  State<CategoriesPage> createState() => _CategoriesPageState();
 }
 
-class _NewsPageState extends State<NewsPage> {
+class _CategoriesPageState extends State<CategoriesPage> {
   int currentPageIndex = 2;
 
-  final List<Map<String, dynamic>> News = const [
-    {'id': 1, 'name': 'BBC News', 'icon': Icons.language, 'color': Colors.red, 'articleCount': 12},
-    {'id': 2, 'name': 'CNN', 'icon': Icons.live_tv, 'color': Colors.blue, 'articleCount': 8},
-    {'id': 4, 'name': 'The Verge', 'icon': Icons.bolt, 'color': Colors.deepPurple, 'articleCount': 5},
-    {'id': 5, 'name': 'TechCrunch', 'icon': Icons.memory, 'color': Colors.green, 'articleCount': 9},
-    {'id': 6, 'name': 'National Geographic', 'icon': Icons.map, 'color': Colors.amber, 'articleCount': 4},
-  ];
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("News d'actualités"),
-        centerTitle: true,
+        title: const Text("Catégories"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-          ),
-          itemCount: News.length,
-          itemBuilder: (context, index) {
-            final source = News[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ArticlesPage(
-                      nomSource: source['name'], 
-                      couleurSource: source['color'],
+        child: FutureBuilder(
+          future: ArticleService().getArticles(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Erreur de chargement des catégories'));
+            } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
+              return Center(child: Text('Aucune catégorie trouvée.'));
+            }
+            final articles = snapshot.data as List;
+            final newsSites = articles.map((a) => a.newsSite).toSet().toList();
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+              ),
+              itemCount: newsSites.length,
+              itemBuilder: (context, index) {
+                final site = newsSites[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ArticlesPage(
+                          nomCategorie: site,
+                          articles: articles.where((a) => a.newsSite == site).toList(),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.category, size: 45, color: Colors.blue),
+                        const SizedBox(height: 8),
+                        Text(site, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text('${articles.where((a) => a.newsSite == site).length} articles'),
+                      ],
                     ),
                   ),
                 );
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: (source['color'] as Color).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: (source['color'] as Color).withOpacity(0.3)),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(source['icon'], size: 45, color: source['color']),
-                    const SizedBox(height: 8),
-                    Text(
-                      source['name'], 
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text('${source['articleCount']} articles récents', style: const TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ),
             );
           },
         ),
@@ -95,7 +98,6 @@ class _NewsPageState extends State<NewsPage> {
           setState(() {
             currentPageIndex = index;
           });
-
           if (index == 0) {
             Navigator.push(
               context, 
@@ -122,7 +124,7 @@ class _NewsPageState extends State<NewsPage> {
           ),
           NavigationDestination(
             icon: Icon(Icons.menu), 
-            label: 'News' 
+            label: 'Categories'
           ),
         ],
       ),
@@ -131,40 +133,20 @@ class _NewsPageState extends State<NewsPage> {
 }
 
 class ArticlesPage extends StatelessWidget {
-  final String nomSource; 
-  final Color couleurSource;
+  final String nomCategorie;
+  final List articles;
 
-  const ArticlesPage({
+  ArticlesPage({
     super.key,
-    required this.nomSource,
-    required this.couleurSource,
+    required this.nomCategorie,
+    required this.articles,
   });
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> articles = [
-      {
-        'titre': 'Dernières de $nomSource',
-        'desc': 'Le flux en direct des informations importantes venant de la source...',
-        'image': 'https://picsum.photos/200/300?random=101',
-      },
-      {
-        'titre': 'Analyse hebdomadaire',
-        'desc': 'Un regard approfondi sur les événements marquants de la semaine...',
-        'image': 'https://picsum.photos/200/300?random=102',
-      },
-      {
-        'titre': 'Reportage exclusif',
-        'desc': 'Une enquête spéciale menée par les journalistes de la rédaction...',
-        'image': 'https://picsum.photos/200/300?random=103',
-      },
-    ];
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(nomSource),
-        backgroundColor: couleurSource.withOpacity(0.2),
-        foregroundColor: couleurSource,
+        title: Text(nomCategorie),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -173,19 +155,20 @@ class ArticlesPage extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 0.75, 
+            childAspectRatio: 0.75,
           ),
           itemCount: articles.length,
           itemBuilder: (context, i) {
+            final article = articles[i];
             return InkWell(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DetailsPage(
-                      title: articles[i]['titre']!,
-                      imageUrl: articles[i]['image']!,
-                      content: articles[i]['desc']!,
+                      title: article.title,
+                      imageUrl: article.imageUrl,
+                      content: article.summary,
                     ),
                   ),
                 );
@@ -201,7 +184,7 @@ class ArticlesPage extends StatelessWidget {
                     Expanded(
                       flex: 3,
                       child: Image.network(
-                        articles[i]['image']!,
+                        article.imageUrl,
                         width: double.infinity,
                         fit: BoxFit.cover,
                         errorBuilder: (ctx, error, stack) => Container(
@@ -218,14 +201,14 @@ class ArticlesPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              articles[i]['titre']!,
+                              article.title,
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              articles[i]['desc']!,
+                              article.summary,
                               style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
