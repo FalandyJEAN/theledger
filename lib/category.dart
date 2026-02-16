@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MonApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'The Ledger',
+      title: 'Lecteur Actu',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const CategoriesPage(),
+      home: CategoriesPage(),
     );
   }
 }
@@ -24,49 +14,48 @@ class MainApp extends StatelessWidget {
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({super.key});
 
- 
   final List<Map<String, dynamic>> categories = const [
     {
       'id': 1,
       'name': 'Sci-Fi',
       'icon': Icons.rocket_launch,
       'color': Colors.purple,
-      'articleCount': 15,
+      'articleCount': 3,
     },
     {
       'id': 2,
       'name': 'Cuisine',
       'icon': Icons.restaurant,
       'color': Colors.orange,
-      'articleCount': 23,
+      'articleCount': 3,
     },
     {
       'id': 3,
       'name': 'Politique',
       'icon': Icons.gavel,
       'color': Colors.red,
-      'articleCount': 42,
+      'articleCount': 3,
     },
     {
       'id': 4,
       'name': 'Histoire',
       'icon': Icons.history_edu,
       'color': Colors.brown,
-      'articleCount': 31,
+      'articleCount': 3,
     },
     {
       'id': 5,
       'name': 'Philosophie',
       'icon': Icons.psychology,
       'color': Colors.teal,
-      'articleCount': 18,
+      'articleCount': 3,
     },
     {
       'id': 6,
       'name': 'Technologie',
       'icon': Icons.computer,
       'color': Colors.blue,
-      'articleCount': 57,
+      'articleCount': 3,
     },
   ];
 
@@ -74,156 +63,168 @@ class CategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-   backgroundColor: Color.fromRGBO(178, 5, 169, 0.448), // ← couleur ici
-  leading: IconButton(
-    icon: const Icon(Icons.arrow_back),
-    tooltip: 'Retour',
-    onPressed: () => Navigator.pop(context),
-  ),
-  title: const Text("Catégories"),
-  actions: [
-    PopupMenuButton<String>(
-      icon: const Icon(Icons.logout),
-      tooltip: 'Quitter',
-      onSelected: (String value) {
-        if (value == 'logout') {
-          _showLogoutDialog(context);
-        }
-      },
-      itemBuilder: (BuildContext context) {
-        return [
-          PopupMenuItem<String>(
-            value: 'logout',
-            child: Row(
-              children: [
-                Icon(Icons.logout, color: Colors.red, size: 20),
-                SizedBox(width: 12),
-                Text('Déconnexion'),
-              ],
-            ),
+        title: Text("Catégories"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text('Déconnexion'),
+                  content: Text('Voulez-vous quitter ?'),
+                  actions: [
+                    TextButton(
+                      child: Text('Annuler'),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                    TextButton(
+                      child: Text('Quitter'),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
-          
-        ];
-      },
-    ),
- 
-  ],
-),
+        ],
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(12),
         child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, 
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
           ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
-            final category = categories[index];
-            return _buildCategoryItem(category);
+            final cat = categories[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ArticlesPage(
+                      nomCategorie: cat['name'],
+                      couleurCategorie: cat['color'],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: (cat['color'] as Color).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(cat['icon'], size: 45, color: cat['color']),
+                    SizedBox(height: 8),
+                    Text(cat['name'], style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('${cat['articleCount']} articles'),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),
     );
   }
+}
 
- 
-  Widget _buildCategoryItem(Map<String, dynamic> category) {
-    return Card(
-      elevation: 5, 
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(13),
+class ArticlesPage extends StatelessWidget {
+  final String nomCategorie;
+  final Color couleurCategorie;
+
+  ArticlesPage({
+    required this.nomCategorie,
+    required this.couleurCategorie,
+  });
+
+  final List<Map<String, String>> articles = [
+    {
+      'titre': 'Les dernières découvertes',
+      'desc': 'Des scientifiques ont fait une grande avancée',
+      'image': 'https://picsum.photos/200/300?random=101',
+    },
+    {
+      'titre': 'Interview exclusive',
+      'desc': 'Rencontre avec un expert du domaine',
+      'image': 'https://picsum.photos/200/300?random=102',
+    },
+    {
+      'titre': 'Guide pratique',
+      'desc': 'Tout ce qu\'il faut savoir pour débuter',
+      'image': 'https://picsum.photos/200/300?random=103',
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(nomCategorie),
+        backgroundColor: couleurCategorie.withOpacity(0.2),
+        foregroundColor: couleurCategorie,
       ),
-      child: InkWell(
-        onTap: () {
-          print('Catégorie sélectionnée: ${category['name']}');
-          
-          // sa se pou nou lye paj sa ak paj atik yo :
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => ArticlesPage(categoryId: category['id']),
-          //   ),
-          // );
-        },
-        borderRadius: BorderRadius.circular(30),
-        child: Container(
-          decoration: BoxDecoration(
-            color: (category['color'] as Color).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16),
-            
-           
+      body: Padding(
+        padding: EdgeInsets.all(10),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.8,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                category['icon'],
-                size: 70,
-                color: category['color'],
+          itemCount: articles.length,
+          itemBuilder: (context, i) {
+            return Card(
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              
-              const SizedBox(height: 4),
-              
-         
-              Text(
-                category['name'],
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.network(
+                    articles[i]['image']!,
+                    height: 110,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (ctx, error, stack) => Container(
+                      height: 110,
+                      color: Colors.grey[300],
+                      child: Icon(Icons.image_not_supported),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          articles[i]['titre']!,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          articles[i]['desc']!,
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          maxLines: 2,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              
-              const SizedBox(height: 4), 
-              
-              Text(
-                '${category['articleCount']} articles',
-                style: TextStyle(
-                  fontSize: 12, 
-                  color: Colors.grey[600],
-                ),
-              ),
-              
-
-               Container(
-                margin: const EdgeInsets.only(top: 6),
-                width: 30,
-                height: 3,
-                decoration: BoxDecoration(
-                color: category['color'],
-               borderRadius: BorderRadius.circular(2),
-                 ),
-               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
-    );
-  }
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Déconnexion'),
-          content: const Text('Voulez-vous vraiment vous déconnecter ?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Annuler'),
-            ),
-            TextButton(
-              onPressed: () {
-                
-                Navigator.pop(context);
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Déconnecter'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
