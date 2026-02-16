@@ -4,41 +4,43 @@ import 'package:the/main.dart';
 import 'package:the/favorites.dart'; 
 
 class MonApp extends StatelessWidget {
+  const MonApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Lecteur Actu',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: const CategoriesPage(),
+      home: const NewsPage(), 
     );
   }
 }
 
-class CategoriesPage extends StatefulWidget {
-  const CategoriesPage({super.key});
+class NewsPage extends StatefulWidget {
+  const NewsPage({super.key});
 
   @override
-  State<CategoriesPage> createState() => _CategoriesPageState();
+  State<NewsPage> createState() => _NewsPageState();
 }
 
-class _CategoriesPageState extends State<CategoriesPage> {
+class _NewsPageState extends State<NewsPage> {
   int currentPageIndex = 2;
 
-  final List<Map<String, dynamic>> categories = const [
-    {'id': 1, 'name': 'Sci-Fi', 'icon': Icons.rocket_launch, 'color': Colors.purple, 'articleCount': 3},
-    {'id': 2, 'name': 'Cuisine', 'icon': Icons.restaurant, 'color': Colors.orange, 'articleCount': 3},
-    {'id': 3, 'name': 'Politique', 'icon': Icons.gavel, 'color': Colors.red, 'articleCount': 3},
-    {'id': 4, 'name': 'Histoire', 'icon': Icons.history_edu, 'color': Colors.brown, 'articleCount': 3},
-    {'id': 5, 'name': 'Philosophie', 'icon': Icons.psychology, 'color': Colors.teal, 'articleCount': 3},
-    {'id': 6, 'name': 'Technologie', 'icon': Icons.computer, 'color': Colors.blue, 'articleCount': 3},
+  final List<Map<String, dynamic>> News = const [
+    {'id': 1, 'name': 'BBC News', 'icon': Icons.language, 'color': Colors.red, 'articleCount': 12},
+    {'id': 2, 'name': 'CNN', 'icon': Icons.live_tv, 'color': Colors.blue, 'articleCount': 8},
+    {'id': 4, 'name': 'The Verge', 'icon': Icons.bolt, 'color': Colors.deepPurple, 'articleCount': 5},
+    {'id': 5, 'name': 'TechCrunch', 'icon': Icons.memory, 'color': Colors.green, 'articleCount': 9},
+    {'id': 6, 'name': 'National Geographic', 'icon': Icons.map, 'color': Colors.amber, 'articleCount': 4},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Catégories"),
+        title: const Text("News d'actualités"),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),
@@ -48,33 +50,38 @@ class _CategoriesPageState extends State<CategoriesPage> {
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
-          itemCount: categories.length,
+          itemCount: News.length,
           itemBuilder: (context, index) {
-            final cat = categories[index];
+            final source = News[index];
             return GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ArticlesPage(
-                      nomCategorie: cat['name'],
-                      couleurCategorie: cat['color'],
+                      nomSource: source['name'], 
+                      couleurSource: source['color'],
                     ),
                   ),
                 );
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: (cat['color'] as Color).withOpacity(0.1),
+                  color: (source['color'] as Color).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: (source['color'] as Color).withOpacity(0.3)),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(cat['icon'], size: 45, color: cat['color']),
+                    Icon(source['icon'], size: 45, color: source['color']),
                     const SizedBox(height: 8),
-                    Text(cat['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                    Text('${cat['articleCount']} articles'),
+                    Text(
+                      source['name'], 
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text('${source['articleCount']} articles récents', style: const TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
@@ -99,7 +106,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
               context, 
               MaterialPageRoute(builder: (context) => const FavoritesPage())
             );
-          } else if (index == 2) {
           }
         },
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
@@ -116,7 +122,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           ),
           NavigationDestination(
             icon: Icon(Icons.menu), 
-            label: 'Categories'
+            label: 'News' 
           ),
         ],
       ),
@@ -125,40 +131,40 @@ class _CategoriesPageState extends State<CategoriesPage> {
 }
 
 class ArticlesPage extends StatelessWidget {
-  final String nomCategorie;
-  final Color couleurCategorie;
+  final String nomSource; 
+  final Color couleurSource;
 
-  ArticlesPage({
+  const ArticlesPage({
     super.key,
-    required this.nomCategorie,
-    required this.couleurCategorie,
+    required this.nomSource,
+    required this.couleurSource,
   });
-
-  final List<Map<String, String>> articles = [
-    {
-      'titre': 'Les dernières découvertes',
-      'desc': 'Des scientifiques ont fait une grande avancée dans le domaine de la recherche fondamentale...',
-      'image': 'https://picsum.photos/200/300?random=101',
-    },
-    {
-      'titre': 'Interview exclusive',
-      'desc': 'Rencontre avec un expert du domaine qui nous explique les enjeux de demain...',
-      'image': 'https://picsum.photos/200/300?random=102',
-    },
-    {
-      'titre': 'Guide pratique',
-      'desc': 'Tout ce qu\'il faut savoir pour débuter sereinement et éviter les erreurs classiques...',
-      'image': 'https://picsum.photos/200/300?random=103',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> articles = [
+      {
+        'titre': 'Dernières de $nomSource',
+        'desc': 'Le flux en direct des informations importantes venant de la source...',
+        'image': 'https://picsum.photos/200/300?random=101',
+      },
+      {
+        'titre': 'Analyse hebdomadaire',
+        'desc': 'Un regard approfondi sur les événements marquants de la semaine...',
+        'image': 'https://picsum.photos/200/300?random=102',
+      },
+      {
+        'titre': 'Reportage exclusif',
+        'desc': 'Une enquête spéciale menée par les journalistes de la rédaction...',
+        'image': 'https://picsum.photos/200/300?random=103',
+      },
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(nomCategorie),
-        backgroundColor: couleurCategorie.withOpacity(0.2),
-        foregroundColor: couleurCategorie,
+        title: Text(nomSource),
+        backgroundColor: couleurSource.withOpacity(0.2),
+        foregroundColor: couleurSource,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),

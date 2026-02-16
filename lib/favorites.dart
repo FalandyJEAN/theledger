@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the/details_page.dart'; 
-import 'package:the/category.dart';
+import 'package:the/news.dart';
 import 'package:the/main.dart';
 
 void main() {
@@ -31,7 +31,6 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  // Varyab pou kontwole onglet ki seleksyone a
   int currentPageIndex = 1;
 
   List<Map<String, dynamic>> favoriteArticles = [
@@ -80,7 +79,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           } else if (index == 2) {
             Navigator.push(
               context, MaterialPageRoute(
-                builder: (context) => const CategoriesPage()));
+                builder: (context) => const NewsPage()));
           }
         },
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
@@ -97,7 +96,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           ),
           NavigationDestination(
             icon: Icon(Icons.menu), 
-            label: 'Categories'
+            label: 'News'
           ),
         ],
       ),

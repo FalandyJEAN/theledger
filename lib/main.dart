@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the/splash_screen.dart';
 import 'package:the/details_page.dart';
-import 'package:the/category.dart';
+import 'package:the/news.dart';
 import 'package:the/favorites.dart';
 
 void main() {
@@ -81,12 +81,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
            
             ListTile(
-              leading: const Icon(Icons.category),
-              title: const Text("Catégories"),
+              leading: const Icon(Icons.newspaper),
+              title: const Text("News"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CategoriesPage()),
+                  MaterialPageRoute(builder: (context) => const NewsPage()),
                 );
               },
             ),
@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
           } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const CategoriesPage()),
+              MaterialPageRoute(builder: (context) => const NewsPage()),
             );
           }
         },
@@ -121,40 +121,12 @@ class _MyHomePageState extends State<MyHomePage> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.favorite), label: 'Favorites'),
-          NavigationDestination(icon: Icon(Icons.menu), label: 'Categories'),
+          NavigationDestination(icon: Icon(Icons.newspaper), label: 'News'),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 🔹 TITRE : TOUTES LES CATÉGORIES
-          const Text(
-            "Toutes les catégories",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-
-          // 🔹 Barre de catégories
-          Row(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildCategoryChip("Actualites", isSelected: selectedCategory == "Actualites"),
-                      _buildCategoryChip("Business", isSelected: selectedCategory == "Business"),
-                      _buildCategoryChip("Tech", isSelected: selectedCategory == "Tech"),
-                      _buildCategoryChip("Education", isSelected: selectedCategory == "Education"),
-                      _buildCategoryChip("Politique", isSelected: selectedCategory == "Politique"),
-                      _buildCategoryChip("Sport", isSelected: selectedCategory == "Sport"),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-
           const SizedBox(height: 30),
 
           // 🔹 Grille 2x2 avec 6 articles
@@ -164,8 +136,8 @@ class _MyHomePageState extends State<MyHomePage> {
   crossAxisCount: 2,
   crossAxisSpacing: 12,
   mainAxisSpacing: 12,
-  childAspectRatio: 0.75, // Mwen desann li yon ti kras pou deskripsyon an ka antre
-  children: List.generate(6, (index) {
+  childAspectRatio: 0.75, 
+  children: List.generate(8, (index) {
     final titles = [
       "Économie mondiale",
       "Nouvelles technologies",
@@ -206,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 4, // Foto a pran yon ti kras plis plas
+              flex: 4, 
               child: Image.network(
                 images[index],
                 fit: BoxFit.cover,
@@ -214,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Expanded(
-              flex: 5, // Nou ogmante pati tèks la
+              flex: 5, 
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -232,11 +204,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(height: 5),
                     
-                    // 2. TI DESKRIPSYON AN AK TWA PWEN (...)
+                    
                     Text(
                       "Découvrez les détails importants de ce dossier concernant ${titles[index].toLowerCase()} et ses impacts...",
-                      maxLines: 3, // Li ka pran jiska 3 liy
-                      overflow: TextOverflow.ellipsis, // Sa a ap mete twa pwen yo otomatikman
+                      maxLines: 3, 
+                      overflow: TextOverflow.ellipsis, 
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[700],
@@ -246,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     
                     const Spacer(),
                     
-                    // 3. TI BOUTON AN
+                  
                     const Text(
                       "Lire l'article >",
                       style: TextStyle(
@@ -348,7 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // 🔹 MODIFICATION DE LA FONCTION POUR SUPPORTER LES DÉTAILS
+  // 🔹 DÉTAILS
   Widget _buildListTile(BuildContext context, String title, String subtitle, String imgUrl, String content) {
     return ListTile(
       onTap: () {
@@ -372,19 +344,5 @@ class _MyHomePageState extends State<MyHomePage> {
       trailing: const Icon(Icons.arrow_circle_right_outlined),
     );
   }
-
-  Widget _buildCategoryChip(String label, {bool isSelected = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: isSelected,
-        onSelected: (bool selected) {
-          setState(() {
-            selectedCategory = label;
-          });
-        },
-      ),
-    );
-  }
 }
+ 
