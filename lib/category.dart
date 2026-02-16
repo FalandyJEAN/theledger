@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the/details_page.dart'; 
-
+import 'package:the/main.dart';      
+import 'package:the/favorites.dart'; 
 
 class MonApp extends StatelessWidget {
   @override
@@ -9,13 +10,20 @@ class MonApp extends StatelessWidget {
       title: 'Lecteur Actu',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: CategoriesPage(),
+      home: const CategoriesPage(),
     );
   }
 }
 
-class CategoriesPage extends StatelessWidget {
+class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
+
+  @override
+  State<CategoriesPage> createState() => _CategoriesPageState();
+}
+
+class _CategoriesPageState extends State<CategoriesPage> {
+  int currentPageIndex = 2;
 
   final List<Map<String, dynamic>> categories = const [
     {'id': 1, 'name': 'Sci-Fi', 'icon': Icons.rocket_launch, 'color': Colors.purple, 'articleCount': 3},
@@ -30,36 +38,12 @@ class CategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Catégories"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text('Déconnexion'),
-                  content: Text('Voulez-vous quitter ?'),
-                  actions: [
-                    TextButton(
-                      child: Text('Annuler'),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
-                    TextButton(
-                      child: Text('Quitter'),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+        title: const Text("Catégories"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
@@ -88,8 +72,8 @@ class CategoriesPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(cat['icon'], size: 45, color: cat['color']),
-                    SizedBox(height: 8),
-                    Text(cat['name'], style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text(cat['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
                     Text('${cat['articleCount']} articles'),
                   ],
                 ),
@@ -97,6 +81,44 @@ class CategoriesPage extends StatelessWidget {
             );
           },
         ),
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: currentPageIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+
+          if (index == 0) {
+            Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context) => const MyHomePage(title: 'The Ledger'))
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context) => const FavoritesPage())
+            );
+          } else if (index == 2) {
+          }
+        },
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined), 
+            selectedIcon: Icon(Icons.home),
+            label: 'Home'
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.favorite_border), 
+            selectedIcon: Icon(Icons.favorite),
+            label: 'Favorites'
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu), 
+            label: 'Categories'
+          ),
+        ],
       ),
     );
   }
@@ -107,6 +129,7 @@ class ArticlesPage extends StatelessWidget {
   final Color couleurCategorie;
 
   ArticlesPage({
+    super.key,
     required this.nomCategorie,
     required this.couleurCategorie,
   });
@@ -138,9 +161,9 @@ class ArticlesPage extends StatelessWidget {
         foregroundColor: couleurCategorie,
       ),
       body: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
@@ -177,24 +200,24 @@ class ArticlesPage extends StatelessWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (ctx, error, stack) => Container(
                           color: Colors.grey[300],
-                          child: Icon(Icons.image_not_supported),
+                          child: const Icon(Icons.image_not_supported),
                         ),
                       ),
                     ),
                     Expanded(
                       flex: 2,
                       child: Padding(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               articles[i]['titre']!,
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               articles[i]['desc']!,
                               style: TextStyle(fontSize: 11, color: Colors.grey[600]),

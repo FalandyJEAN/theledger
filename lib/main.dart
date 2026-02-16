@@ -79,11 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text("Déconnexion"),
-              onTap: () {},
-            ),
+           
             ListTile(
               leading: const Icon(Icons.category),
               title: const Text("Catégories"),
@@ -93,6 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => const CategoriesPage()),
                 );
               },
+            ),
+             ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text("Déconnexion"),
+              onTap: () {},
             ),
           ],
         ),
