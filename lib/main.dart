@@ -67,28 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
       // Utilisation de CustomScrollView pour la performance
       body: CustomScrollView(
         slivers: [
-          // Section Titre et Bouton
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Toutes les catégories",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  TextButton.icon(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesPage())),
-                    icon: const Icon(Icons.category),
-                    label: const Text("Voir toutes les catégories"),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ),
-            ),
-          ),
+          // Section Titre et Bouton supprimée — espace réservé
+          SliverToBoxAdapter(child: SizedBox(height: 8)),
           
           // Grille d'articles avec FutureBuilder
           FutureBuilder<List<Article>>(
